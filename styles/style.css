@@ -38,3 +38,11 @@
 .size-img {
     height: 172px;
 }
+
+.footer {
+    max-width: 100vw;
+}
+
+.cohort {
+    margin-left: auto;
+}
