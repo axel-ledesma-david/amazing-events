@@ -56,3 +56,9 @@
     object-fit: cover;
 }
 
+@media screen and (max-width:767px) {
+    .img-detail {
+        width: 100%;
+    }
+}
+
