@@ -4,7 +4,7 @@ const dataEvents = data.events;
 
 for (const card of dataEvents) {
    if (card.date < data.currentDate) {
-    containerPast.innerHTML += `
+    container.innerHTML += `
     <div class="col p-2">
     <div class="card" style="width: 18rem;">
         <img src=${card.image} class="card-img-top size-img" alt="Feria de comidas">
