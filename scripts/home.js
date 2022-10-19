@@ -5,8 +5,10 @@ const submitSearch = document.getElementById('submitSearch')
 
 const dataEvents = data.events;
 
-const renderAllCards = () => {
-    dataEvents.map(item => {
+
+
+const renderCards = (arr) => {
+    arr.map(item => {
         container.innerHTML += `
         <div class="col p-2">
         <div class="card shadow" style="width: 18rem;">
@@ -16,7 +18,7 @@ const renderAllCards = () => {
                 <p class="card-text hiddem-description">${item.description}</p>
                 <div class="d-flex justify-content-around">
                     <p class="card-title fw-bolder fs-4">$ ${item.price}</p>
-                    <a href="#" class="btn btn-primary text-center">Read more</a>
+                    <a href="/detail.html?id=${item._id}" class="btn btn-primary text-center">Read more</a>
                 </div>
             </div>
         </div>
@@ -25,66 +27,64 @@ const renderAllCards = () => {
     })
 }
 
-renderAllCards()
+renderCards(dataEvents)
 
 const arrCategoryClean = new Set(dataEvents.map(item => item.category))
 
 const arrClean = Array.from(arrCategoryClean)
 
-console.log(arrClean)
 
-let arrValue = []
-// 
 const renderCheckbox = () => {
 
-    for (let item of arrClean) {
+    arrClean.map(item => {
         containerCheckbox.innerHTML += `
         <div class="form-check form-check-inline p-3">
-        <input class="form-check-input" type="checkbox" value=${item}>
-        <label class="form-check-label">${item}</label>
+        <input class="form-check-input check" type="checkbox" value=${item} id=${item}>
+        <label class="form-check-label" for=${item} >${item}</label>
         </div>
     `
-        console.log(item)
-    }
+    })
+
+
+
 }
 renderCheckbox()
 
-let renderCategoryFilter = (value) => {
-    dataEvents
-        .filter(item => item.category.includes(value))
-        .map(item => {
-            return container.innerHTML += `
-        <div class="col p-2">
-        <div class="card" style="width: 18rem;">
-            <img src=${item.image} class="card-img-top size-img" alt="Feria de comidas">
-            <div class="card-body">
-                <h5 class="card-title">${item.name}</h5>
-                <p class="card-text hiddem-description">${item.description}</p>
-                <div class="d-flex justify-content-around">
-                    <p class="card-title fw-bolder fs-4">$ ${item.price}</p>
-                    <a href="#" class="btn btn-primary text-center">Read more</a>
-                </div>
-            </div>
-        </div>
-    </div>
-        `
-        })
 
+
+
+
+
+let renderCategoryFilter = (value, stateChecked) => {
+
+    if (stateChecked = 'true') {
+        aux.push(dataEvents.filter(item => item.category.includes(value)))
+        aux = dataEvents.filter(item => item.category.includes(value))
+            .reduce((a, b) => a.concat(b) ,[])
+        renderCards(aux)
+        console.log(aux)
+    } else if (stateChecked = 'false'){
+        aux.filter(item => item !== value)
+    }
 
 }
 
-containerCheckbox.addEventListener('click', function (e) {
 
+
+let aux = []
+containerCheckbox.addEventListener('click', function (e) {
+    
+    let categoryChecked = e.target.checked
     let valueEvent = e.target.value
-    if (valueEvent.checked = true) {
+    console.log()
+    if (categoryChecked) {
+
         container.innerHTML = ''
-        renderCategoryFilter(valueEvent)
-        console.log(valueEvent)
-        console.log(typeof (valueEvent))
-        console.log('checked')
-    } else {
+        renderCategoryFilter(valueEvent, categoryChecked)
+    }
+    else {
         container.innerHTML = ''
-        renderAllCards()
+        renderCards(dataEvents)
         console.log('not checked')
     }
 })
@@ -106,7 +106,7 @@ const renderCardsFilterSearch = (value) => {
                 <p class="card-text hiddem-description">${item.description}</p>
                 <div class="d-flex justify-content-around">
                     <p class="card-title fw-bolder fs-4">$ ${item.price}</p>
-                    <a href="#" class="btn btn-primary text-center">Read more</a>
+                    <a href="/detail.html?id=${item._id}" class="btn btn-primary text-center">Read more</a>
                 </div>
             </div>
         </div>
@@ -125,7 +125,7 @@ const searchEvent = () => {
             renderCardsFilterSearch(valueSearch)
         } else {
             container.innerHTML = ''
-            renderAllCards()
+            renderCards(dataEvents)
         }
     })
 }
@@ -133,19 +133,17 @@ const searchEvent = () => {
 searchEvent()
 
 
-/* 
+// No me funcionó
 const submitEvent = () =>{
-    submitSearch.addEventListener('submit', function(e){
-        let valueSearch = e.target.value
+    submitSearch.addEventListener('click', function(e){
+        
+        let valueSearch = e.value
         console.log(valueSearch)
-        if (valueSearch.keyup = true) {
+        
             container.innerHTML = ''
             renderCardsFilterSearch(valueSearch)
-        } else {
-            container.innerHTML = ''
-            renderAllCards()
-        }
+            e.preventDefault()
     })
 }
 
-submitEvent() */
+submitEvent()
