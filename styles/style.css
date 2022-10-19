@@ -31,9 +31,14 @@
     overflow: hidden;
 }
 
+.icon-search {
+    font-size: 30px;
+  }
+
 .size-img {
     height: 172px;
 }
+
 
 .card {
     transition: all ease-in .20s;
