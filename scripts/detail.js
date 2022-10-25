@@ -1,34 +1,51 @@
 let containerDetail = document.getElementById('containerDetail')
 
-const dataEvents = data.events;
-console.log(location.search)
-console.log(location.search.slice(4))
 
-let idCapture = location.search.slice(4)
-let renderCardDetail = ()=>{
-    /* Tengo que arreglar los estilos de la card */
-   
-    dataEvents
-    .filter(item => item._id == idCapture)
-    .map(item => {
-        containerDetail.innerHTML = `
-    <div class="card mb-3 shadow" style="max-width: 640px; height: 155px">
-    <div class="row g-0">
+let apiAmazing = async () => {
+
+    try {
+        let api = await fetch('https://mind-hub.up.railway.app/amazing')
+        let data = await api.json()
+        let events = await data.events
+        console.log(location.search)
+
+        let idCapture = location.search.slice(4)
+        let renderCardDetail = () => {
+
+
+            events
+                .filter(item => item.id == idCapture)
+                .map(item => {
+                    containerDetail.innerHTML = `
+    <div class="card mb-3 shadow d-flex flex-row" style="width: 700px; height: 300px">
+    
         <div class="col-md-4">
-            <img src=${item.image} class="img-fluid rounded-start img-detail" alt=${item.name}>
+            <img src=${item.image} class=" rounded-start img-detail" alt=${item.name}>
         </div>
-        <div class="col-md-8">
-            <div class="card-body">
+        
+            <div class="card-body p-4">
                 <h5 class="card-title">${item.name}</h5>
                 <p class="card-text">${item.description}</p>
-                <p class="card-text"><small class="text-muted">${item.date}</small></p>
+                <p class="card-text"><b>Assistance: </b> ${item.assistance}</p>
+                <p class="card-text"><b>Place: </b>  ${item.place}</p>
+                <p class="card-text"><b>Price: </b>  $${item.price}</p>
+                <p class="card-text"><small class="text-muted"><b class="text-black">Date: </b>  ${item.date}</small></p>
             </div>
-        </div>
-    </div>
+        
+    
 </div>
     `
-    })
-    console.log(idCapture)
+                })
+            console.log(idCapture)
+        }
+
+        renderCardDetail()
+    } catch (error) {
+
+    }
 }
 
-renderCardDetail()
+apiAmazing()
+
+
+
