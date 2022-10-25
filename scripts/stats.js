@@ -1,5 +1,6 @@
 const tBody = document.getElementById('tBody')
 const tBody2 = document.getElementById('tBody2')
+const tBody3 = document.getElementById('tBody3')
 
 let apiAmazing = async () => {
     try {
@@ -19,78 +20,91 @@ let apiAmazing = async () => {
         let pastForPercentage = [...past].sort((a, b) => a.percentage - b.percentage)
         let pastForCapacity = [...past].sort((a, b) => a.capacity - b.capacity)
 
-        let filterCategories = (dateEvent) => {
-            let arrCategory = dateEvent.map(item => item.category)
-
-            let cleanCategory = new Set(arrCategory)
-
-            let arrCleanCategory = Array.from(cleanCategory)
-            return arrCleanCategory
-        }
-
-        let objectProps = {
-            assistance: 0,
-            gain: 0,
-            capacity: 0,
-            [property]: 0
-
-        }
-
-        let acum = (dateEvent, prop) => {
-            
-            let capacity = dateEvent.reduce((a, b) => { return a.capacity + b.capacity }, objectProps)
-            let property = dateEvent.reduce((a, b) => { return a.prop + b.prop }, objectProps)
+        /*  let filterCategories = (dateEvent) => {
+             let arrCategory = dateEvent.map(item => item.category)
+ 
+             let cleanCategory = new Set(arrCategory)
+ 
+             let arrCleanCategory = Array.from(cleanCategory)
+             return arrCleanCategory
+         } */
 
 
-            if (dateEvent.category === filterCategories(dateEvent)) {
-                objectProps = {
-                    assistance: sumaAssis,
-                    gain: sumaGain,
-                    capacity,
-                    [property]: property
-                }
-
-            }
-        }
-
-        /* console.log('set array   :', arrCleanCategory) */
-
+        filter(upcoming, 'estimate')
+        filter(past, 'assistance')
 
         const renderTable1 = () => {
             return tBody.innerHTML += `
-        <tbody>
-            <tr>
-                <td>${pastForPercentage[pastForPercentage.length - 1].name}   ${pastForPercentage[pastForPercentage.length - 1].percentage.toFixed(1)}  </td>
-                <td>${pastForPercentage[0].name}   ${pastForPercentage[0].percentage.toFixed(1)}</td>
+                    <tr>
+                        <td>${pastForPercentage[pastForPercentage.length - 1].name}   ${pastForPercentage[pastForPercentage.length - 1].percentage.toFixed(1)}  </td>
+                        <td>${pastForPercentage[0].name}   ${pastForPercentage[0].percentage.toFixed(1)}</td>
 
-                <td>${pastForCapacity[pastForCapacity.length - 1].name}   ${pastForCapacity[pastForCapacity.length - 1].capacity}</td>
-            </tr>
-        </tbody>
-    `
+                        <td>${pastForCapacity[pastForCapacity.length - 1].name}   ${pastForCapacity[pastForCapacity.length - 1].capacity}</td>
+                    </tr>
+            `
         }
 
         renderTable1()
 
-        let renderTableUpcoming = () => {
-            dateEvent(upcoming)
-            let sumaAssis = dateEvent.reduce((a, b) => { return a.assistance + b.assistance }, objectProps)
-            let sumaGain = dateEvent.reduce((a, b) => { return a.revenue + b.revenue }, objectProps)
-            filterCategories(upcoming).map(element => {
 
+        function renderTableUpcoming(array) {
+
+            array.map(element => {
                 tBody2.innerHTML += `
-                <tbody>
-                    <tr>
-                        <td>${element}</td>
-                        <td>${sumaGain}</td>
-        
-                        <td>${pastForCapacity[pastForCapacity.length - 1].name}   ${pastForCapacity[pastForCapacity.length - 1].capacity}</td>
-                    </tr>
-                </tbody>
-            `
+                        <tr>
+                            <td>${element.category}</td>
+                            <td>${element.revenue}</td>
+                            <td>${element.prom} </td>
+                        </tr>
+                `
             })
         }
-        renderTableUpcoming(filterCategories(upcoming))
 
+        function renderTablePast(array) {
+            array.map(item => {
+                tBody3.innerHTML += `
+                <tr>
+                    <td>${item.category}</td>
+                    <td>${item.revenue}</td>
+                    <td>${item.prom} </td>
+                </tr>
+                `
+            })
+        }
+
+        function filter(fechaEvento, propiedad) {
+            fechaEvento.map(evento => { evento.revenue = evento[propiedad] * evento.price })
+            let categories = Array.from(new Set(fechaEvento.map(evento => evento.category)))
+            let stats = categories.map(cat => {
+                let filter = fechaEvento.filter(evento => evento.category === cat)
+                return acumulador(filter, propiedad)
+            })
+            renderTableUpcoming(stats)
+            renderTablePast(stats)
+        }
+
+        function acumulador(array, propiedad) {
+            let initialValue = {
+                category: "",
+                revenue: 0,
+                capacity: 0,
+                [propiedad]: 0
+            }
+            let stats = array.reduce((a, b) => {
+                return {
+                    category: b.category,
+                    revenue: a.revenue + b.revenue,
+                    capacity: a.capacity + b.capacity,
+                    [propiedad]: a[propiedad] + b[propiedad] // el valor interno de la propiedad
+                }
+            }, initialValue)
+            stats.prom = (100 * stats[propiedad] / stats.capacity).toFixed(0)
+            return stats
+        }
+
+
+        /*  renderTableUpcoming(filterCategories(upcoming))
+  */
     }
     catch (err) {
         console.log('error', err)
